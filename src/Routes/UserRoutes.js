@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   RegisterUser,
   LoginUser,
-} from "../src/Controllers/UserRegisterAndAuthentication.js";
+} from "../Controllers/UserRegisterAndAuthentication.js";
 
 const router = Router();
 
