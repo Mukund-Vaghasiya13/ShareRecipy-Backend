@@ -1,6 +1,11 @@
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { User } from "../Modles/UserModle.js";
 import { CustomError } from "../utils/CustomErrorClass.js";
+import {
+  uplodeCloudanry,
+  removeProfileImage,
+} from "../utils/CloudnaryImageUplode.js";
+import fs from "fs";
 
 const RegisterUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
@@ -57,4 +62,56 @@ const LoginUser = asyncHandler(async (req, res) => {
   });
 });
 
-export { RegisterUser, LoginUser };
+const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
+  const file = req.file;
+  //MARK: Debug
+  //console.log(file)
+  const loginUserDetails = req.user;
+  const username = req.body;
+
+  if (!file) {
+    throw new CustomError("", "File Uplode Fail", 400);
+  }
+
+  if (!username) {
+    await fs.promises.unlink(file.path);
+    throw new CustomError("", "File Uplode Fail", 400);
+  }
+
+  if (!loginUserDetails) {
+    await fs.promises.unlink(file.path);
+    throw new CustomError("", "Invalid Token Details", 401);
+  }
+
+  const validUser = await User.findById(loginUserDetails._id);
+
+  if (!validUser) {
+    await fs.promises.unlink(file.path);
+    throw new CustomError("", "Invalid User", 401);
+  }
+
+  const result = await uplodeCloudanry(file.path);
+  if (!result) {
+    throw new CustomError("", "Fail to uplode Image to Cloud", 401);
+  }
+
+  try {
+    validUser.username = username;
+    validUser.profilePicture = result.secure_url;
+    await validUser.save({ validateBeforeSave: false });
+  } catch (e) {
+    removeProfileImage(file.path);
+    throw new CustomError(
+      e?.message ?? "Server Error",
+      "Fail to Update Details",
+      401
+    );
+  }
+
+  return res.status(201).json({
+    message: "Login Successfull",
+    statusCode: 201,
+  });
+});
+
+export { RegisterUser, LoginUser, UplodeOrChangeUsername };
