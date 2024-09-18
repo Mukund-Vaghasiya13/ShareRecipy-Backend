@@ -28,11 +28,17 @@ const RegisterUser = asyncHandler(async (req, res) => {
     throw new CustomError("", "Fail to Genrate Token", 500);
   }
 
-  return res.status(201).json({
-    Logintoken: token,
-    message: "Login Successfull",
-    statusCode: 201,
-  });
+  return res
+    .cookie("token", token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    })
+    .status(201)
+    .json({
+      Logintoken: token,
+      message: "Login Successfull",
+      statusCode: 201,
+    });
 });
 
 const LoginUser = asyncHandler(async (req, res) => {
@@ -55,42 +61,49 @@ const LoginUser = asyncHandler(async (req, res) => {
     throw new CustomError("", "Fail to Genrate Token", 500);
   }
 
-  return res.status(201).json({
-    Logintoken: token,
-    message: "Login Successfull",
-    statusCode: 201,
-  });
+  return res
+    .cookie("token", token, {
+      httpOnly: true,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    })
+    .status(201)
+    .json({
+      Logintoken: token,
+      message: "Login Successfull",
+      statusCode: 201,
+    });
 });
 
 const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
-  const file = req.file;
+  const FilePath = req.file ?? null;
   //MARK: Debug
-  //console.log(file)
+  //console.log(file);
   const loginUserDetails = req.user;
-  const username = req.body;
+  const { username } = req.body;
+  console.log(req.body);
 
-  if (!file) {
+  if (!FilePath) {
     throw new CustomError("", "File Uplode Fail", 400);
   }
 
   if (!username) {
-    await fs.promises.unlink(file.path);
+    await fs.promises.unlink(FilePath.path);
     throw new CustomError("", "File Uplode Fail", 400);
   }
 
   if (!loginUserDetails) {
-    await fs.promises.unlink(file.path);
+    await fs.promises.unlink(FilePath.path);
     throw new CustomError("", "Invalid Token Details", 401);
   }
 
   const validUser = await User.findById(loginUserDetails._id);
 
   if (!validUser) {
-    await fs.promises.unlink(file.path);
+    await fs.promises.unlink(FilePath.path);
     throw new CustomError("", "Invalid User", 401);
   }
 
-  const result = await uplodeCloudanry(file.path);
+  const result = await uplodeCloudanry(FilePath.path);
   if (!result) {
     throw new CustomError("", "Fail to uplode Image to Cloud", 401);
   }
@@ -109,7 +122,7 @@ const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
   }
 
   return res.status(201).json({
-    message: "Login Successfull",
+    message: "Details Update Successfully",
     statusCode: 201,
   });
 });

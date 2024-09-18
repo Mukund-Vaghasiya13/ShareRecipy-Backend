@@ -2,10 +2,10 @@ import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./Uplodes");
+    cb(null, "./src/Uplodes");
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname);
+    cb(null, file.originalname);
   },
 });
 

@@ -17,10 +17,10 @@ const uplodeCloudanry = async (FilePath) => {
     });
     //MARK: Debug
     //console.log("file is uploaded on cloudinary ", response.url);
-    await fs.promises.unlink(file.path);
+    await fs.promises.unlink(FilePath);
     return response;
   } catch {
-    await fs.promises.unlink(file.path);
+    await fs.promises.unlink(FilePath);
     return null;
   }
 };
