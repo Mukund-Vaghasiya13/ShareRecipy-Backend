@@ -13,6 +13,6 @@ router.route("/register").post(RegisterUser);
 router.route("/login").post(LoginUser);
 router
   .route("/update")
-  .post(verifyUser, upload.single("Recipy"), UplodeOrChangeUsername);
+  .post(verifyUser, upload.single("RecipyUserProfile"), UplodeOrChangeUsername);
 
 export const UserRoute = router;

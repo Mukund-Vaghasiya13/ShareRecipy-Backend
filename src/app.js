@@ -11,4 +11,6 @@ import { UserRoute } from "./Routes/UserRoutes.js";
 
 app.use("/api/v1/User", UserRoute);
 
+import { RecipeRoute } from "./Routes/RecipesRoute.js";
+app.use("/api/v1/Recipe", RecipeRoute);
 export { app };

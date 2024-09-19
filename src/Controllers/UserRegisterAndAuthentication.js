@@ -32,6 +32,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
     .cookie("token", token, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: true,
     })
     .status(201)
     .json({
@@ -65,6 +66,7 @@ const LoginUser = asyncHandler(async (req, res) => {
     .cookie("token", token, {
       httpOnly: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
+      secure: true,
     })
     .status(201)
     .json({
@@ -102,7 +104,7 @@ const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
     await fs.promises.unlink(FilePath.path);
     throw new CustomError("", "Invalid User", 401);
   }
-
+  removeProfileImage(validUser.profilePicture);
   const result = await uplodeCloudanry(FilePath.path);
   if (!result) {
     throw new CustomError("", "Fail to uplode Image to Cloud", 401);
@@ -126,5 +128,14 @@ const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
     statusCode: 201,
   });
 });
+
+// // MARK: To be Done later
+// const loguotUser = asyncHandler(async (req, res) => {
+//   const user = req.user;
+//   if (!user) {
+//     throw new CustomError("", "Invalid User", 401);
+//   }
+
+// });
 
 export { RegisterUser, LoginUser, UplodeOrChangeUsername };
