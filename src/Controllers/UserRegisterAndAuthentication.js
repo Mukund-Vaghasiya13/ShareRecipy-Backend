@@ -49,11 +49,13 @@ const LoginUser = asyncHandler(async (req, res) => {
     $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
   });
 
+  console.log(user);
+
   if (!user) {
     throw new CustomError("", "User is not Registerd", 500);
   }
 
-  if (!user.isPasswordCorrect(password)) {
+  if (!(await user.isPasswordCorrect(password))) {
     throw new CustomError("", "Fail To Authenticate", 500);
   }
 
