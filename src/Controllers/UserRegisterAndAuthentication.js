@@ -28,6 +28,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
     throw new CustomError("", "Fail to Genrate Token", 500);
   }
 
+  newUser.password = undefined;
   return res
     .cookie("token", token, {
       httpOnly: true,
@@ -39,6 +40,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
       Logintoken: token,
       message: "Login Successfull",
       statusCode: 201,
+      user: newUser,
     });
 });
 
@@ -62,6 +64,7 @@ const LoginUser = asyncHandler(async (req, res) => {
     throw new CustomError("", "Fail to Genrate Token", 500);
   }
 
+  user.password = undefined;
   return res
     .cookie("token", token, {
       httpOnly: true,
@@ -73,6 +76,7 @@ const LoginUser = asyncHandler(async (req, res) => {
       Logintoken: token,
       message: "Login Successfull",
       statusCode: 201,
+      user,
     });
 });
 

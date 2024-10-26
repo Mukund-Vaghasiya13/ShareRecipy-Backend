@@ -15,7 +15,7 @@ const error = new Error("hey there")
 next(error)
 }
 
-// Golobally middleware they got call always when some one do request
+// Golobally middleware they got call always when some one do request it will run or called one every request
 //Orders of middlerware matters
 app.use(middleware)
 app.use(ErrorHandler)
