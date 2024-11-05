@@ -4,6 +4,7 @@ import { RecipesModle } from "../Modles/Recipes.js";
 import { User } from "../Modles/UserModle.js";
 import fs from "fs";
 import { uplodeCloudanry } from "../utils/CloudnaryImageUplode.js";
+import { Console } from "console";
 
 const createRecipes = asyncHandler(async (req, res) => {
   // get recipes image
@@ -46,10 +47,14 @@ const createRecipes = asyncHandler(async (req, res) => {
     throw new CustomError("", "Fail to create Recipes", 400);
   }
 
-  return res.status(201).json({
-    message: "Recipe Created successfully",
-    statuscode: 201,
-  });
+  return res.sendStatus(201);
 });
 
+const ListUserRecipe = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const { page } = req.query;
+  //TODO:
+  //Using Id List acording To Page Recipes
+  //Return that as List
+});
 export { createRecipes };

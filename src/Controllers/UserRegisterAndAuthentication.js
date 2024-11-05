@@ -80,56 +80,45 @@ const LoginUser = asyncHandler(async (req, res) => {
     });
 });
 
-const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
-  const FilePath = req.file ?? null;
-  //MARK: Debug
-  //console.log(file);
+const ChangeUsernameOrEmail = asyncHandler(async (req, res) => {
   const loginUserDetails = req.user;
-  const { username } = req.body;
-  console.log(req.body);
-
-  if (!FilePath) {
-    throw new CustomError("", "File Uplode Fail", 400);
-  }
-
-  if (!username) {
-    await fs.promises.unlink(FilePath.path);
-    throw new CustomError("", "File Uplode Fail", 400);
-  }
+  const FilePath = req.file ?? null;
+  const { username, email } = req.body;
 
   if (!loginUserDetails) {
-    await fs.promises.unlink(FilePath.path);
+    if (FilePath) {
+      await fs.promises.unlink(FilePath.path);
+    }
     throw new CustomError("", "Invalid Token Details", 401);
   }
 
-  const validUser = await User.findById(loginUserDetails._id);
+  const validUser = await User.findById(loginUserDetails._id).select(
+    "-password"
+  );
 
   if (!validUser) {
-    await fs.promises.unlink(FilePath.path);
+    if (FilePath) {
+      await fs.promises.unlink(FilePath.path);
+    }
     throw new CustomError("", "Invalid User", 401);
   }
-  removeProfileImage(validUser.profilePicture);
-  const result = await uplodeCloudanry(FilePath.path);
-  if (!result) {
-    throw new CustomError("", "Fail to uplode Image to Cloud", 401);
-  }
 
-  try {
-    validUser.username = username;
+  if (FilePath) {
+    const result = await uplodeCloudanry(FilePath.path);
+    if (!result) {
+      await fs.promises.unlink(FilePath.path);
+      throw new CustomError("", "Fail to upload Image to Cloud", 401);
+    }
     validUser.profilePicture = result.secure_url;
-    await validUser.save({ validateBeforeSave: false });
-  } catch (e) {
-    removeProfileImage(file.path);
-    throw new CustomError(
-      e?.message ?? "Server Error",
-      "Fail to Update Details",
-      401
-    );
   }
 
+  // Only update fields if they are provided
+  if (username) validUser.username = username;
+  if (email) validUser.email = email;
+
+  const updateUser = await validUser.save({ validateBeforeSave: false });
   return res.status(201).json({
-    message: "Details Update Successfully",
-    statusCode: 201,
+    ...updateUser._doc,
   });
 });
 
@@ -142,4 +131,4 @@ const UplodeOrChangeUsername = asyncHandler(async (req, res) => {
 
 // });
 
-export { RegisterUser, LoginUser, UplodeOrChangeUsername };
+export { RegisterUser, LoginUser, ChangeUsernameOrEmail };

@@ -23,11 +23,7 @@ const listRecipes = asyncHandler(async (req, res) => {
   if (!recipes) {
     throw new CustomError("", "Unable To fetch Recipy", 500);
   }
-
-  return res.status(200).json({
-    user: user,
-    recipe: recipes,
-  });
+  return res.status(200).json(recipes);
 });
 
 export { listRecipes };
