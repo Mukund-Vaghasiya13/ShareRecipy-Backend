@@ -10,9 +10,9 @@ const createRecipes = asyncHandler(async (req, res) => {
   // get recipes image
   const FileMetaData = req.file;
   //get fields value
-  const { title, description, ingredients, instructions } = req.body;
+  const { title, description, ingredients } = req.body;
   // check all the fileds
-  if ([title, description, ingredients, instructions].some((e) => !e)) {
+  if ([title, description, ingredients].some((e) => !e)) {
     await fs.promises.unlink(FileMetaData.path);
     throw new CustomError("", "Fields are empety Or image uplode problem", 400);
   }
@@ -40,21 +40,71 @@ const createRecipes = asyncHandler(async (req, res) => {
     image: result.secure_url,
     description,
     ingredients,
-    instructions,
   });
 
   if (!createRecipe) {
     throw new CustomError("", "Fail to create Recipes", 400);
   }
 
-  return res.sendStatus(201);
+  return res.status(201).json(createRecipe);
 });
 
-const ListUserRecipe = asyncHandler(async (req, res) => {
+const listRecipesOfParticularUser = asyncHandler(async (req, res) => {
   const user = req.user;
-  const { page } = req.query;
-  //TODO:
-  //Using Id List acording To Page Recipes
-  //Return that as List
+
+  if (!user) {
+    throw new CustomError("", "Login Token Expire", 401);
+  }
+
+  const queryParam = req.query;
+
+  if (!queryParam.page) {
+    throw new CustomError("", "Specify the page Count!", 500);
+  }
+
+  const page = parseInt(queryParam.page);
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const recipes = await RecipesModle.find({ userId: user._id })
+    .skip(skip)
+    .limit(limit);
+
+  if (!recipes) {
+    throw new CustomError("", "Unable To fetch Recipy", 500);
+  }
+  return res.status(200).json(recipes);
 });
-export { createRecipes };
+
+const DeleteRecipes = asyncHandler(async (req, res) => {
+  const user = req.user;
+  const { _id } = req.body;
+
+  if (!user) {
+    throw new CustomError("", "Login Token Expire", 401);
+  }
+
+  if (!_id) {
+    throw new CustomError("", "Field is Empety", 400);
+  }
+
+  const validUser = await User.findById(user._id);
+
+  if (!validUser) {
+    throw new CustomError("", "Invalid User", 401);
+  }
+
+  const recipe = await RecipesModle.findByIdAndDelete(_id);
+
+  if (!recipe) {
+    throw new CustomError("", "Fail To delete", 401);
+  }
+
+  //TODO: Send Message
+  return res.status(201).json({
+    message: "Delete Successfull",
+    statusCode: 201,
+  });
+});
+
+export { createRecipes, listRecipesOfParticularUser, DeleteRecipes };

@@ -4,16 +4,19 @@ import { verifyUser } from "../Middlewares/CheckUserIsValidOrNot.js";
 
 const router = Router();
 
-import { createRecipes } from "../Controllers/Recipes.js";
 import {
-  listRecipes,
+  createRecipes,
   listRecipesOfParticularUser,
-} from "../Controllers/HomeScreen.js";
+  DeleteRecipes,
+} from "../Controllers/Recipes.js";
+import { listRecipes } from "../Controllers/HomeScreen.js";
+
 router
   .route("/createRecipes")
   .post(verifyUser, upload.single("RecipesImage"), createRecipes);
 
 router.route("/list").get(verifyUser, listRecipes);
 router.route("/list/user").get(verifyUser, listRecipesOfParticularUser);
+router.route("/list/user/delete").post(verifyUser, DeleteRecipes);
 
 export const RecipeRoute = router;
