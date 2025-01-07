@@ -1,5 +1,6 @@
 import mongoose, { Types } from "mongoose";
 
+//MARK comment 120 characters
 const ReviewsSchema = new mongoose.Schema(
   {
     userID: {
@@ -13,6 +14,9 @@ const ReviewsSchema = new mongoose.Schema(
     rating: {
       type: Number,
       default: 0,
+    },
+    comment: {
+      type: String,
     },
   },
   { timestamps: true }

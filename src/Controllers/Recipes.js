@@ -4,7 +4,6 @@ import { RecipesModle } from "../Modles/Recipes.js";
 import { User } from "../Modles/UserModle.js";
 import fs from "fs";
 import { uplodeCloudanry } from "../utils/CloudnaryImageUplode.js";
-import { Console } from "console";
 
 const createRecipes = asyncHandler(async (req, res) => {
   // get recipes image
@@ -47,6 +46,30 @@ const createRecipes = asyncHandler(async (req, res) => {
   }
 
   return res.status(201).json(createRecipe);
+});
+
+const listRecipes = asyncHandler(async (req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    throw new CustomError("", "Login Token Expire", 401);
+  }
+
+  const queryParam = req.query;
+
+  if (!queryParam.page) {
+    throw new CustomError("", "Specify the page Count!", 500);
+  }
+
+  const page = parseInt(queryParam.page);
+  const limit = 10;
+  const skip = (page - 1) * limit;
+
+  const recipes = await RecipesModle.find().skip(skip).limit(limit);
+  if (!recipes) {
+    throw new CustomError("", "Unable To fetch Recipy", 500);
+  }
+  return res.status(200).json(recipes);
 });
 
 const listRecipesOfParticularUser = asyncHandler(async (req, res) => {
@@ -107,4 +130,11 @@ const DeleteRecipes = asyncHandler(async (req, res) => {
   });
 });
 
-export { createRecipes, listRecipesOfParticularUser, DeleteRecipes };
+//TODO: UpdateRecipes
+
+export {
+  createRecipes,
+  listRecipes,
+  listRecipesOfParticularUser,
+  DeleteRecipes,
+};

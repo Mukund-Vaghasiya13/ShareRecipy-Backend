@@ -8,8 +8,8 @@ import {
   createRecipes,
   listRecipesOfParticularUser,
   DeleteRecipes,
+  listRecipes,
 } from "../Controllers/Recipes.js";
-import { listRecipes } from "../Controllers/HomeScreen.js";
 
 router
   .route("/createRecipes")

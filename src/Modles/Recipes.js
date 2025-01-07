@@ -1,5 +1,5 @@
 import mongoose, { Types } from "mongoose";
-
+//MARK: title 30 characters, description 100 and ingredients 150 characters
 const RecipesSchema = new mongoose.Schema(
   {
     userId: {

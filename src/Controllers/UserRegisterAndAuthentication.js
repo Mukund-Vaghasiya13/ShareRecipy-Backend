@@ -115,7 +115,6 @@ const ChangeUsernameOrEmail = asyncHandler(async (req, res) => {
   // Only update fields if they are provided
   if (username) validUser.username = username;
   if (email) validUser.email = email;
-
   const updateUser = await validUser.save({ validateBeforeSave: false });
   return res.status(201).json({
     ...updateUser._doc,
