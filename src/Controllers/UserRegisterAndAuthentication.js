@@ -103,6 +103,8 @@ const ChangeUsernameOrEmail = asyncHandler(async (req, res) => {
     throw new CustomError("", "Invalid User", 401);
   }
 
+  removeProfileImage(validUser.profilePicture);
+
   if (FilePath) {
     const result = await uplodeCloudanry(FilePath.path);
     if (!result) {
