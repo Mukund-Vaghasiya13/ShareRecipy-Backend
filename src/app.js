@@ -13,4 +13,9 @@ app.use("/api/v1/User", UserRoute);
 
 import { RecipeRoute } from "./Routes/RecipesRoute.js";
 app.use("/api/v1/Recipe", RecipeRoute);
+
+app.get("/api/v1/", (req, res) => {
+  res.send("Hello World");
+});
+
 export { app };
